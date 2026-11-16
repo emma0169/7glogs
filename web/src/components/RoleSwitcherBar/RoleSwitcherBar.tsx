@@ -21,14 +21,14 @@ export const RoleSwitcherBar: React.FC = () => {
   useEffect(() => {
     reloadData()
     const handleUpdate = () => reloadData()
-    window.addEventListener('yumzee_store_update', handleUpdate)
-    return () => window.removeEventListener('yumzee_store_update', handleUpdate)
+    window.addEventListener('stream_store_update', handleUpdate)
+    return () => window.removeEventListener('stream_store_update', handleUpdate)
   }, [])
 
   const sampleGroup = activeGroups[0] || OrderStore.getGroupOrders()[0]
 
   return (
-    <div className="border-b border-[#371F62] bg-[#2A154D] text-white text-xs py-2 px-3 sticky top-0 z-50 shadow-md">
+    <div className="border-b border-[#1E1B4B] bg-[#2A154D] text-white text-xs py-2 px-3 sticky top-0 z-50 shadow-md">
       <div className="container mx-auto flex flex-wrap items-center justify-between gap-2">
         <div className="flex items-center gap-2">
           <span className="flex items-center gap-1 font-extrabold text-[#FFC928] uppercase tracking-wider bg-[#FFC928]/20 px-2 py-0.5 rounded-md border border-[#FFC928]/40">
@@ -42,7 +42,7 @@ export const RoleSwitcherBar: React.FC = () => {
           <Link
             to={routes.home()}
             className={`flex items-center gap-1.5 px-2.5 py-1 rounded-lg font-semibold transition ${location.pathname === '/' || location.pathname === '/checkout'
-              ? 'bg-[#FFC928] text-[#4B2E83] shadow'
+              ? 'bg-[#FFC928] text-[#4338CA] shadow'
               : 'bg-white/10 hover:bg-white/20 text-white/90'
               }`}
           >
@@ -54,7 +54,7 @@ export const RoleSwitcherBar: React.FC = () => {
           <Link
             to={sampleGroup ? `/group/${sampleGroup.groupCode}` : routes.createGroupOrder()}
             className={`flex items-center gap-1.5 px-2.5 py-1 rounded-lg font-semibold transition ${location.pathname.startsWith('/group')
-              ? 'bg-[#FFC928] text-[#4B2E83] shadow'
+              ? 'bg-[#FFC928] text-[#4338CA] shadow'
               : 'bg-white/10 hover:bg-white/20 text-white/90'
               }`}
           >
@@ -71,7 +71,7 @@ export const RoleSwitcherBar: React.FC = () => {
           <Link
             to="/seller"
             className={`flex items-center gap-1.5 px-2.5 py-1 rounded-lg font-semibold transition ${location.pathname === '/seller'
-              ? 'bg-[#FFC928] text-[#4B2E83] shadow'
+              ? 'bg-[#FFC928] text-[#4338CA] shadow'
               : 'bg-white/10 hover:bg-white/20 text-white/90'
               }`}
           >
@@ -83,7 +83,7 @@ export const RoleSwitcherBar: React.FC = () => {
           <Link
             to="/rider"
             className={`flex items-center gap-1.5 px-2.5 py-1 rounded-lg font-semibold transition ${location.pathname === '/rider'
-              ? 'bg-[#FFC928] text-[#4B2E83] shadow'
+              ? 'bg-[#FFC928] text-[#4338CA] shadow'
               : 'bg-white/10 hover:bg-white/20 text-white/90'
               }`}
           >
@@ -95,7 +95,7 @@ export const RoleSwitcherBar: React.FC = () => {
           <Link
             to="/admin"
             className={`flex items-center gap-1.5 px-2.5 py-1 rounded-lg font-semibold transition ${location.pathname === '/admin'
-              ? 'bg-[#FFC928] text-[#4B2E83] shadow'
+              ? 'bg-[#FFC928] text-[#4338CA] shadow'
               : 'bg-white/10 hover:bg-white/20 text-white/90'
               }`}
           >

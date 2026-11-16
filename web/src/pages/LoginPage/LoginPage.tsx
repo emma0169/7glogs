@@ -69,28 +69,28 @@ const LoginPage = () => {
 
   return (
     <div className="flex min-h-screen flex-col overflow-hidden bg-white md:flex-row">
-      <Metadata title="Login" description="Sign in to Yumzee" />
+      <Metadata title="Login" description="Sign in to STREAM" />
 
       {/* Left side - Branding */}
-      <div className="relative flex min-h-[240px] flex-col items-center justify-center overflow-hidden bg-gradient-to-br from-[#4B2E83] via-[#3A2366] to-[#2A1A4E] p-8 text-white md:min-h-screen md:w-1/2 md:p-12">
+      <div className="relative flex min-h-[240px] flex-col items-center justify-center overflow-hidden bg-gradient-to-br from-[#4338CA] via-[#3A2366] to-[#2A1A4E] p-8 text-white md:min-h-screen md:w-1/2 md:p-12">
         <div className="relative z-10 flex w-full flex-col items-center text-center">
           <Link
             to={routes.home()}
             className="mb-4 inline-block transition hover:opacity-90"
           >
             <h1 className="text-4xl font-extrabold tracking-tight md:text-5xl">
-              <span className="text-white">YUM</span>
-              <span className="text-[#FFC928]">ZEE</span>
+              <span className="text-white">STR</span>
+              <span className="text-[#FFC928]">EAM</span>
             </h1>
           </Link>
           <p className="mb-6 max-w-sm text-base font-light text-white/80 md:text-lg">
-            Good Food. Right Where You Need It.
+            Buy &amp; Sell Social Media Accounts.
           </p>
 
           <div className="hidden w-full max-w-sm overflow-hidden rounded-2xl border border-white/10 shadow-2xl sm:block">
             <img
-              src="https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=600&h=400&fit=crop"
-              alt="Delicious Snacks"
+              src="https://images.unsplash.com/photo-1611162617213-7d7a39e9b1d7?w=600&h=400&fit=crop"
+              alt="Social Media Accounts"
               className="h-48 w-full object-cover md:h-56"
             />
           </div>
@@ -101,11 +101,11 @@ const LoginPage = () => {
       <div className="flex min-h-[calc(100vh-240px)] items-center justify-center p-6 md:min-h-screen md:w-1/2 md:p-12">
         <div className="w-full max-w-sm text-center">
           <div className="mb-8">
-            <div className="mb-4 inline-flex h-14 w-14 items-center justify-center rounded-2xl bg-[#F5F1FB] text-[#4B2E83] shadow-sm">
-              <span className="text-2xl">🍔</span>
+            <div className="mb-4 inline-flex h-14 w-14 items-center justify-center rounded-2xl bg-[#EEF0FF] text-[#4338CA] shadow-sm">
+              <span className="text-2xl">📱</span>
             </div>
             <h2 className="text-xl font-bold text-[#211F26]">Welcome Back</h2>
-            <p className="mt-2 text-xs text-[#6F6B76]">Sign in to order and track.</p>
+            <p className="mt-2 text-xs text-[#6F6B76]">Sign in to buy and sell accounts.</p>
           </div>
 
           {errorMessage && (
@@ -118,10 +118,10 @@ const LoginPage = () => {
             type="button"
             onClick={handleGoogleSignIn}
             disabled={isSigningIn || (loading && isAuthenticated)}
-            className="flex w-full items-center justify-center gap-3 rounded-2xl border border-[#DADCE0] bg-white px-6 py-3 shadow-sm transition hover:border-[#4B2E83] hover:bg-[#F8F9FA] focus:outline-none focus:ring-2 focus:ring-[#4B2E83]/30 active:scale-[0.99] disabled:opacity-60"
+            className="flex w-full items-center justify-center gap-3 rounded-2xl border border-[#DADCE0] bg-white px-6 py-3 shadow-sm transition hover:border-[#4338CA] hover:bg-[#F8F9FA] focus:outline-none focus:ring-2 focus:ring-[#4338CA]/30 active:scale-[0.99] disabled:opacity-60"
           >
             {isSigningIn ? (
-              <div className="h-5 w-5 animate-spin rounded-full border-2 border-[#4B2E83] border-t-transparent"></div>
+              <div className="h-5 w-5 animate-spin rounded-full border-2 border-[#4338CA] border-t-transparent"></div>
             ) : (
               <GoogleIcon />
             )}
@@ -131,17 +131,17 @@ const LoginPage = () => {
           </button>
 
           <div className="mt-8 text-xs leading-relaxed text-[#6F6B76]">
-            By continuing you agree to YumZee&apos;s{' '}
+            By continuing you agree to STREAM&apos;s{' '}
             <Link
               to={routes.home()}
-              className="font-medium text-[#4B2E83] hover:underline"
+              className="font-medium text-[#4338CA] hover:underline"
             >
               Terms of Service
             </Link>{' '}
             and{' '}
             <Link
               to={routes.home()}
-              className="font-medium text-[#4B2E83] hover:underline"
+              className="font-medium text-[#4338CA] hover:underline"
             >
               Privacy Policy
             </Link>
@@ -150,9 +150,9 @@ const LoginPage = () => {
           <div className="mt-6 border-t border-[#E9E5EE] pt-6">
             <Link
               to={routes.home()}
-              className="inline-flex items-center gap-1 text-sm font-medium text-[#4B2E83] transition hover:text-[#3A2366]"
+              className="inline-flex items-center gap-1 text-sm font-medium text-[#4338CA] transition hover:text-[#3A2366]"
             >
-              ← Back to Explore Menu
+              ← Back to Home
             </Link>
           </div>
         </div>

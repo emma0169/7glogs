@@ -179,7 +179,7 @@ const AdminOrdersPage = () => {
                     </div>
 
                     <div className="col-span-2 truncate text-gray-700">{getItemSummary(order.items)}</div>
-                    <div className="truncate font-bold text-red-600">₦{order.total?.toLocaleString() || '0'}</div>
+                    <div className="truncate font-bold text-red-600">{order.total?.toLocaleString() || '0'}</div>
                     <div className="truncate text-xs text-gray-400">{formatDate(order.createdAt)}</div>
 
                     <div className="relative flex justify-center">
@@ -248,9 +248,9 @@ const AdminOrdersPage = () => {
                     <div key={item.id} className="flex items-center justify-between rounded-lg border border-red-100 p-2">
                       <div>
                         <p className="text-sm font-bold text-gray-800">{item.quantity}x {item.name}</p>
-                        <p className="text-xs text-gray-500">₦{item.price?.toLocaleString()} each</p>
+                        <p className="text-xs text-gray-500">{item.price?.toLocaleString()} each</p>
                       </div>
-                      <p className="text-sm font-bold text-gray-800">₦{(item.price * item.quantity).toLocaleString()}</p>
+                      <p className="text-sm font-bold text-gray-800">{(item.price * item.quantity).toLocaleString()}</p>
                     </div>
                   ))}
                 </div>
@@ -259,15 +259,15 @@ const AdminOrdersPage = () => {
               <div className="mt-4 space-y-2 border-t border-red-100 pt-4">
                 <div className="flex justify-between text-sm text-gray-600">
                   <span>Subtotal</span>
-                  <span>₦{selectedOrder.subtotal?.toLocaleString() || '0'}</span>
+                  <span>{selectedOrder.subtotal?.toLocaleString() || '0'}</span>
                 </div>
                 <div className="flex justify-between text-sm text-gray-600">
                   <span>Delivery Fee</span>
-                  <span>₦{selectedOrder.deliveryFee?.toLocaleString() || '0'}</span>
+                  <span>{selectedOrder.deliveryFee?.toLocaleString() || '0'}</span>
                 </div>
                 <div className="flex justify-between border-t border-red-100 pt-2 text-base font-black text-red-600">
                   <span>Total</span>
-                  <span>₦{selectedOrder.total?.toLocaleString() || '0'}</span>
+                  <span>{selectedOrder.total?.toLocaleString() || '0'}</span>
                 </div>
               </div>
 

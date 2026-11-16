@@ -152,8 +152,8 @@ const DeliveryMap = ({
           center={[latitude, longitude]}
           radius={150}
           pathOptions={{
-            color: '#3E2679',
-            fillColor: '#3E2679',
+            color: '#312E81',
+            fillColor: '#312E81',
             fillOpacity: 0.12,
             weight: 1,
           }}

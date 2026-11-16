@@ -7,11 +7,11 @@ import HomePage from 'src/pages/HomePage/HomePage'
 import SearchPage from 'src/pages/SearchPage/SearchPage'
 import ProductDetailPage from 'src/pages/ProductDetailPage/ProductDetailPage'
 import BasketPage from 'src/pages/BasketPage/BasketPage'
-import CheckoutPage from 'src/pages/CheckoutPage/CheckoutPage'
 import OrdersPage from 'src/pages/OrdersPage/OrdersPage'
 import ProfilePage from 'src/pages/ProfilePage/ProfilePage'
-import NotificationsPage from 'src/pages/NotificationsPage/NotificationsPage'
-import BrandPage from 'src/pages/BrandPage/BrandPage'
+import FundWalletPage from 'src/pages/FundWalletPage/FundWalletPage'
+import TransactionHistoryPage from 'src/pages/TransactionHistoryPage/TransactionHistoryPage'
+import WithdrawPage from 'src/pages/WithdrawPage/WithdrawPage'
 import NotFoundPage from 'src/pages/NotFoundPage/NotFoundPage'
 
 // ADMIN IMPORTS
@@ -24,6 +24,7 @@ import AdminLoggedInUsersPage from 'src/pages/AdminLoggedInUsersPage/AdminLogged
 import AdminProfilesPage from 'src/pages/AdminProfilesPage/AdminProfilesPage'
 import AdminUserDetailPage from 'src/pages/AdminUserDetailPage/AdminUserDetailPage'
 import AdminHelpPage from 'src/pages/AdminHelpPage/AdminHelpPage'
+import AdminWithdrawalsPage from 'src/pages/AdminWithdrawalsPage/AdminWithdrawalsPage'
 import AdminNotificationsPage from 'src/pages/AdminNotificationsPage/AdminNotificationsPage'
 
 const Routes = () => {
@@ -37,11 +38,11 @@ const Routes = () => {
           <Route path="/search" page={SearchPage} name="search" />
           <Route path="/product/{id}" page={ProductDetailPage} name="productDetail" />
           <Route path="/basket" page={BasketPage} name="basket" />
-          <Route path="/checkout" page={CheckoutPage} name="checkout" />
           <Route path="/orders" page={OrdersPage} name="orders" />
           <Route path="/profile" page={ProfilePage} name="profile" />
-          <Route path="/notifications" page={NotificationsPage} name="notifications" />
-          <Route path="/brand" page={BrandPage} name="brand" />
+          <Route path="/fund-wallet" page={FundWalletPage} name="fundWallet" />
+          <Route path="/transactions" page={TransactionHistoryPage} name="transactions" />
+          <Route path="/withdraw" page={WithdrawPage} name="withdraw" />
         </Set>
       ) : (
         <Route path="/" page={WelcomePage} name="welcome" />
@@ -57,6 +58,7 @@ const Routes = () => {
       <Route path="/admin/profiles" page={AdminProfilesPage} name="adminProfiles" />
       <Route path="/admin/user/{id}" page={AdminUserDetailPage} name="adminUserDetail" />
       <Route path="/admin/help" page={AdminHelpPage} name="adminHelp" />
+      <Route path="/admin/withdrawals" page={AdminWithdrawalsPage} name="adminWithdrawals" />
       <Route path="/admin/notifications" page={AdminNotificationsPage} name="adminNotifications" />
 
       <Route notfound page={NotFoundPage} />

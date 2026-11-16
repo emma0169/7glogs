@@ -48,7 +48,7 @@ const AdminOverviewPage = () => {
                       <p className="font-bold text-gray-800">{order.customerName || 'Customer'}</p>
                       <p className="text-xs text-gray-500">{order.createdAt?.seconds ? new Date(order.createdAt.seconds * 1000).toLocaleString() : 'Just now'}</p>
                     </div>
-                    <span className="text-lg font-black text-red-600">₦{order.total?.toLocaleString() || '0'}</span>
+                    <span className="text-lg font-black text-red-600">{order.total?.toLocaleString() || '0'}</span>
                   </div>
                 ))}
               </div>

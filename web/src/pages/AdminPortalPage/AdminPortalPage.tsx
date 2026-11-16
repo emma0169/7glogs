@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { navigate, routes } from '@redwoodjs/router'
 import { Metadata } from '@redwoodjs/web'
 import {
-  LayoutDashboard, ShoppingBag, Package, Users, LogOut, UserCircle, HelpCircle, Bell,
+  LayoutDashboard, ShoppingBag, Package, Users, LogOut, UserCircle, HelpCircle, Bell, Banknote,
 } from 'lucide-react'
 import { collection, onSnapshot } from 'firebase/firestore'
 import { db } from 'src/lib/firebase'
@@ -23,13 +23,13 @@ const AdminPortalPage = () => {
 
   return (
     <div className="min-h-screen bg-red-50">
-      <Metadata title="Admin Portal" description="YumZee Admin" />
+      <Metadata title="Admin Portal" description="STREAM Admin" />
       <header className="bg-red-600 text-white">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
           <div className="flex items-center gap-3">
             <LayoutDashboard className="h-8 w-8" />
             <div>
-              <h1 className="text-2xl font-black">YumZee Admin</h1>
+              <h1 className="text-2xl font-black">STREAM Admin</h1>
               <p className="text-xs text-red-200">Select a section to manage</p>
             </div>
           </div>
@@ -92,6 +92,15 @@ const AdminPortalPage = () => {
             <div>
               <p className="text-xl font-black text-gray-800">Help Requests</p>
               <p className="text-sm text-gray-500">See user complaints & issues</p>
+            </div>
+          </button>
+
+          {/* Withdrawals Button */}
+          <button onClick={() => navigate(routes.adminWithdrawals())} className="flex flex-col items-start gap-4 rounded-2xl border border-red-200 bg-white p-6 text-left transition hover:border-red-500 hover:bg-red-50">
+            <Banknote className="h-10 w-10 text-red-600" />
+            <div>
+              <p className="text-xl font-black text-gray-800">Withdrawals</p>
+              <p className="text-sm text-gray-500">Approve payouts & refund requests</p>
             </div>
           </button>
 

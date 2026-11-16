@@ -1,21 +1,24 @@
 import React, { createContext, useContext, useState, ReactNode } from 'react'
 
 export interface CartItem {
-  id: number
+  id: string | number
   name: string
   price: number
   image: string
   category: string
   quantity: number
   brandPackage: boolean
+  code?: string | number
+  accountEmail?: string
+  accountPassword?: string
 }
 
 interface CartContextType {
   cart: CartItem[]
-  addToCart: (product: { id: number; name: string; price: number; image?: string; category?: string }, quantity?: number, brandPackage?: boolean) => void
-  removeFromCart: (id: number) => void
-  updateQuantity: (id: number, delta: number) => void
-  toggleBrandPackage: (id: number) => void
+  addToCart: (product: { id: string | number; name: string; price: number; image?: string; category?: string; code?: string | number; accountEmail?: string; accountPassword?: string }, quantity?: number, brandPackage?: boolean) => void
+  removeFromCart: (id: string | number) => void
+  updateQuantity: (id: string | number, delta: number) => void
+  toggleBrandPackage: (id: string | number) => void
   clearCart: () => void
   totalPrice: number
   itemCount: number
@@ -49,9 +52,12 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
             name: product.name,
             price: product.price,
             image: product.image || '/placeholder.jpg',
-            category: product.category || 'Snack',
+            category: product.category || 'Account',
             quantity: Math.max(1, quantity),
             brandPackage,
+            code: product.code,
+            accountEmail: product.accountEmail || '',
+            accountPassword: product.accountPassword || '',
           },
         ]
       }

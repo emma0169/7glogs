@@ -56,17 +56,17 @@ const OrdersPage = () => {
   }
 
   return (
-    <div className="mx-auto min-h-screen max-w-md bg-[#FFF9E5] p-4 font-sans text-[#211F26]">
-      <h1 className="anim-fade-up mb-4 text-xl font-bold text-[#211F26]">Your Orders</h1>
+    <div className="mx-auto min-h-screen max-w-md bg-[#F3F4F8] p-4 font-sans text-[#211F26]">
+      <h1 className="anim-fade-up mb-4 text-xl font-bold text-[#211F26]">My Purchases</h1>
 
       {loading ? (
-        <p className="py-10 text-center text-sm text-[#6F6B76]">Loading your orders...</p>
+        <p className="py-10 text-center text-sm text-[#6F6B76]">Loading your purchases...</p>
       ) : orders.length === 0 ? (
         <div className="anim-pop-in flex flex-col items-center justify-center rounded-2xl bg-white py-16 text-center">
           <ShoppingBag className="mb-4 h-16 w-16 text-[#6F6B76]/30" />
-          <h2 className="text-lg font-bold text-[#211F26]">No orders yet</h2>
-          <p className="mt-1 text-sm text-[#6F6B76]">Browse snacks to place an order.</p>
-          <Link to={routes.home()} className="mt-6 rounded-full bg-[#FFC107] px-6 py-3 text-sm font-bold text-black transition hover:bg-[#e6ad00] active:scale-95">Browse Snacks</Link>
+          <h2 className="text-lg font-bold text-[#211F26]">No purchases yet</h2>
+          <p className="mt-1 text-sm text-[#6F6B76]">Browse accounts to make your first purchase.</p>
+          <Link to={routes.home()} className="mt-6 rounded-full bg-[#4338CA] px-6 py-3 text-sm font-bold text-white transition hover:bg-[#3730A3] active:scale-95">Browse Accounts</Link>
         </div>
       ) : (
         <div className="space-y-4">
@@ -77,20 +77,35 @@ const OrdersPage = () => {
               style={{ animationDelay: `${Math.min(index * 80, 480)}ms` }}
             >
               <div className="flex justify-between items-center border-b border-[#E9E5EE] pb-2 mb-2">
-                <span className="text-xs font-bold text-[#3E2679]">Order #{String(order.id).slice(-6)}</span>
+                <span className="text-xs font-bold text-[#312E81]">Order #{String(order.id).slice(-6)}</span>
                 <span className={`text-xs font-bold ${order.isCompleted ? 'text-green-600' : 'text-orange-500'}`}>
-                  {order.isCompleted ? 'Delivered' : 'In Progress'}
+                  {order.isCompleted ? 'Completed' : 'Pending'}
                 </span>
               </div>
               {(order.items || []).map((item) => (
-                <div key={item.id} className="flex justify-between py-1 text-sm">
-                  <span>{item.quantity} x {item.name}</span>
-                  <span className="font-bold text-[#3E2679]">₦{(item.price * item.quantity).toLocaleString()}</span>
+                <div key={item.id} className="border-b border-dashed border-[#E9E5EE] py-2 last:border-0">
+                  <div className="flex justify-between text-sm">
+                    <span className="font-bold">{item.name}</span>
+                    <span className="font-bold text-[#312E81]">{(item.price * (item.quantity || 1)).toLocaleString()}</span>
+                  </div>
+                  {(item.accountEmail || item.accountPassword || item.code) && (
+                    <div className="mt-1 space-y-0.5 rounded-lg bg-[#F7F8FC] p-2 text-[11px]">
+                      {item.accountEmail && (
+                        <p className="text-[#6F6B76]">Login: <span className="font-bold text-[#211F26]">{item.accountEmail}</span></p>
+                      )}
+                      {item.accountPassword && (
+                        <p className="text-[#6F6B76]">Password: <span className="font-bold text-[#211F26]">{item.accountPassword}</span></p>
+                      )}
+                      {item.code && (
+                        <p className="text-[#6F6B76]">Account No.: <span className="font-bold text-[#211F26]">{item.code}</span></p>
+                      )}
+                    </div>
+                  )}
                 </div>
               ))}
               <div className="flex justify-between border-t border-[#E9E5EE] pt-2 mt-2">
                 <span className="font-bold">Total</span>
-                <span className="font-black text-[#3E2679]">₦{(order.total || 0).toLocaleString()}</span>
+                <span className="font-black text-[#312E81]">{(order.total || 0).toLocaleString()}</span>
               </div>
               {formatDate(order.createdAt) && (
                 <p className="mt-1 text-[10px] text-[#A09BA8]">{formatDate(order.createdAt)}</p>

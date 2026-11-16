@@ -114,7 +114,7 @@ const AdminUserDetailPage = ({ id }: { id: string }) => {
             <div className="flex flex-wrap gap-3">
               <div className="min-w-[100px] rounded-xl bg-red-600 px-4 py-2 text-center text-white">
                 <p className="text-[10px] font-bold uppercase opacity-80">Total Spent</p>
-                <p className="text-lg font-black">₦{totalSpent.toLocaleString()}</p>
+                <p className="text-lg font-black">{totalSpent.toLocaleString()}</p>
               </div>
               <div className="min-w-[100px] rounded-xl border border-red-200 bg-white px-4 py-2 text-center">
                 <p className="text-[10px] font-bold uppercase text-red-600">Orders</p>
@@ -254,7 +254,7 @@ const AdminUserDetailPage = ({ id }: { id: string }) => {
                       </p>
                       {(order.items || []).map((item: any) => (
                         <p key={item.id} className="text-sm text-gray-700">
-                          {item.quantity} x {item.name} — ₦
+                          {item.quantity} x {item.name} — 
                           {(item.price * item.quantity).toLocaleString()}
                         </p>
                       ))}
@@ -264,7 +264,7 @@ const AdminUserDetailPage = ({ id }: { id: string }) => {
                         Total
                       </p>
                       <p className="text-lg font-black text-red-600">
-                        ₦{order.total?.toLocaleString() || '0'}
+                        {order.total?.toLocaleString() || '0'}
                       </p>
                       {order.fullAddress && (
                         <p className="mt-1 flex items-start gap-1 text-xs text-gray-500">

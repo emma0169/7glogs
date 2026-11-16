@@ -59,10 +59,10 @@ export const JoinGroupModal: React.FC<JoinGroupModalProps> = ({ isOpen, onClose 
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fadeIn">
       <div className="relative w-full max-w-lg overflow-hidden rounded-3xl bg-white shadow-2xl border border-[#E9E5EE]">
         {/* Modal Header */}
-        <div className="bg-gradient-to-r from-[#4B2E83] to-[#371F62] p-6 text-white">
+        <div className="bg-gradient-to-r from-[#4338CA] to-[#1E1B4B] p-6 text-white">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2.5">
-              <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-[#FFC928] text-[#4B2E83] font-bold">
+              <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-[#FFC928] text-[#4338CA] font-bold">
                 <Users className="h-5 w-5" />
               </div>
               <div>
@@ -96,12 +96,12 @@ export const JoinGroupModal: React.FC<JoinGroupModalProps> = ({ isOpen, onClose 
                   setCode(e.target.value.toUpperCase())
                   setError('')
                 }}
-                className="flex-1 rounded-2xl border-2 border-[#E9E5EE] px-4 py-3 text-base font-bold uppercase tracking-widest text-[#211F26] placeholder-[#A09BA8] focus:border-[#4B2E83] focus:outline-none focus:ring-2 focus:ring-[#4B2E83]/20"
+                className="flex-1 rounded-2xl border-2 border-[#E9E5EE] px-4 py-3 text-base font-bold uppercase tracking-widest text-[#211F26] placeholder-[#A09BA8] focus:border-[#4338CA] focus:outline-none focus:ring-2 focus:ring-[#4338CA]/20"
                 maxLength={10}
               />
               <button
                 type="submit"
-                className="inline-flex items-center gap-2 rounded-2xl bg-[#FFC928] px-6 py-3 font-bold text-[#4B2E83] shadow-md transition hover:bg-[#E5B420] active:scale-95"
+                className="inline-flex items-center gap-2 rounded-2xl bg-[#FFC928] px-6 py-3 font-bold text-[#4338CA] shadow-md transition hover:bg-[#E5B420] active:scale-95"
               >
                 <span>Join</span>
                 <ArrowRight className="h-4 w-4" />
@@ -124,7 +124,7 @@ export const JoinGroupModal: React.FC<JoinGroupModalProps> = ({ isOpen, onClose 
             </div>
 
             {activeGroups.length === 0 ? (
-              <div className="rounded-2xl border border-dashed border-[#E9E5EE] bg-[#FAF8FD] p-6 text-center">
+              <div className="rounded-2xl border border-dashed border-[#E9E5EE] bg-[#F7F8FC] p-6 text-center">
                 <p className="text-sm font-semibold text-[#6F6B76]">No other open groups at the moment.</p>
                 <p className="mt-1 text-xs text-[#A09BA8]">Be the host! Start one and invite your hostel friends.</p>
               </div>
@@ -139,20 +139,20 @@ export const JoinGroupModal: React.FC<JoinGroupModalProps> = ({ isOpen, onClose 
                     <div
                       key={group.id}
                       onClick={() => handleSelectGroup(group.groupCode)}
-                      className="group flex cursor-pointer items-center justify-between rounded-2xl border border-[#E9E5EE] bg-[#FAF8FD] p-3.5 transition duration-150 hover:border-[#4B2E83] hover:bg-[#F5F1FB] hover:shadow-sm"
+                      className="group flex cursor-pointer items-center justify-between rounded-2xl border border-[#E9E5EE] bg-[#F7F8FC] p-3.5 transition duration-150 hover:border-[#4338CA] hover:bg-[#EEF0FF] hover:shadow-sm"
                     >
                       <div className="space-y-1">
                         <div className="flex items-center gap-2">
-                          <span className="rounded-md bg-[#4B2E83] px-2 py-0.5 text-[11px] font-bold text-white">
+                          <span className="rounded-md bg-[#4338CA] px-2 py-0.5 text-[11px] font-bold text-white">
                             {group.groupCode}
                           </span>
-                          <h4 className="text-sm font-bold text-[#211F26] group-hover:text-[#4B2E83]">
+                          <h4 className="text-sm font-bold text-[#211F26] group-hover:text-[#4338CA]">
                             {group.title}
                           </h4>
                         </div>
                         <div className="flex flex-wrap items-center gap-3 text-xs text-[#6F6B76]">
                           <span className="flex items-center gap-1">
-                            <MapPin className="h-3 w-3 text-[#4B2E83]" />
+                            <MapPin className="h-3 w-3 text-[#4338CA]" />
                             {group.hostelAddress}
                           </span>
                           <span className="flex items-center gap-1">
@@ -167,7 +167,7 @@ export const JoinGroupModal: React.FC<JoinGroupModalProps> = ({ isOpen, onClose 
                       </div>
 
                       <div className="text-right">
-                        <span className="inline-flex items-center gap-1 text-xs font-bold text-[#4B2E83] group-hover:translate-x-1 transition">
+                        <span className="inline-flex items-center gap-1 text-xs font-bold text-[#4338CA] group-hover:translate-x-1 transition">
                           Join <ArrowRight className="h-3.5 w-3.5" />
                         </span>
                       </div>
@@ -180,14 +180,14 @@ export const JoinGroupModal: React.FC<JoinGroupModalProps> = ({ isOpen, onClose 
         </div>
 
         {/* Modal Footer */}
-        <div className="border-t border-[#E9E5EE] bg-[#FAF8FD] px-6 py-4 flex items-center justify-between">
+        <div className="border-t border-[#E9E5EE] bg-[#F7F8FC] px-6 py-4 flex items-center justify-between">
           <span className="text-xs text-[#6F6B76]">Want to start your own hostel order?</span>
           <button
             onClick={() => {
               onClose()
               navigate(routes.createGroupOrder())
             }}
-            className="rounded-xl bg-[#4B2E83] px-4 py-2 text-xs font-bold text-white hover:bg-[#371F62] transition"
+            className="rounded-xl bg-[#4338CA] px-4 py-2 text-xs font-bold text-white hover:bg-[#1E1B4B] transition"
           >
             Create New Group
           </button>

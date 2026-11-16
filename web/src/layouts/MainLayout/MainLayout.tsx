@@ -1,20 +1,18 @@
 import React, { useState, useEffect, useRef } from 'react'
-import { ShoppingCart, User, LogOut, Home, Search, ShoppingBag, Bell } from 'lucide-react'
+import { ShoppingCart, User, LogOut, Home, Search, ShoppingBag } from 'lucide-react'
 import { Link, navigate, routes, useLocation } from '@redwoodjs/router'
 import { useCart } from 'src/components/CartContext/CartContext'
 import { useAuth } from 'src/contexts/AuthContexts'
-import YumzeeLogo from 'src/components/YumzeeLogo/YumzeeLogo'
-import { db } from 'src/lib/firebase'
-import { collection, doc, onSnapshot } from 'firebase/firestore'
+import StreamLogo from 'src/components/YumzeeLogo/YumzeeLogo'
 
 const MainLayout = ({ children }) => {
   const { itemCount } = useCart()
   const { user, logOut } = useAuth()
 
   const [showFloatingCart, setShowFloatingCart] = useState(false)
+  const [hideHeader, setHideHeader] = useState(false)
+  const lastScrollY = useRef(0)
   const [pos, setPos] = useState({ x: 16, y: 0 })
-  const [totalNotifs, setTotalNotifs] = useState(0)
-  const [readCount, setReadCount] = useState(0)
   const dragging = useRef(false)
   const offset = useRef({ x: 0, y: 0 })
   const didDrag = useRef(false)
@@ -41,34 +39,25 @@ const MainLayout = ({ children }) => {
     else setShowFloatingCart(false)
   }, [itemCount])
 
-  // Count total notifications: broadcasts (no targetEmail) + this user's own
+  // Hide the top bar while scrolling down, reveal it when scrolling up.
   useEffect(() => {
-    const unsub = onSnapshot(collection(db, 'notifications'), (snap) => {
-      const visible = snap.docs
-        .map((d) => d.data() as any)
-        .filter((n) => !n.targetEmail || n.targetEmail === user?.email)
-      setTotalNotifs(visible.length)
-    })
-    return () => unsub()
-  }, [user])
-
-  // Count how many user has read
-  useEffect(() => {
-    if (!user?.uid) {
-      setReadCount(0)
-      return
+    const onScroll = () => {
+      const y = window.scrollY || document.documentElement.scrollTop
+      if (y <= 48) {
+        setHideHeader(false)
+      } else if (y > lastScrollY.current + 6) {
+        setHideHeader(true)
+      } else if (y < lastScrollY.current - 6) {
+        setHideHeader(false)
+      }
+      lastScrollY.current = y
     }
-    const unsub = onSnapshot(doc(db, 'profiles', user.uid), (snap) => {
-      const readIds = snap.data()?.readNotifications || []
-      setReadCount(readIds.length)
-    })
-    return () => unsub()
-  }, [user])
-
-  const unreadCount = Math.max(0, totalNotifs - readCount)
+    window.addEventListener('scroll', onScroll, { passive: true })
+    return () => window.removeEventListener('scroll', onScroll)
+  }, [])
 
   // WhatsApp-style header title: logo stays, only the text changes per page.
-  // Home (/) shows YUMZEE, every other page shows its own name.
+  // Home (/) shows STREAM, every other page shows its own name.
   const { pathname } = useLocation()
   const headerTitle =
     pathname === '/search'
@@ -77,17 +66,13 @@ const MainLayout = ({ children }) => {
         ? 'Orders'
         : pathname === '/profile'
           ? 'Profile'
-          : pathname === '/notifications'
-            ? 'Notifications'
+          : pathname === '/fund-wallet'
+            ? 'Fund Wallet'
             : pathname === '/basket'
               ? 'Basket'
-              : pathname === '/checkout'
-                ? 'Checkout'
-              : pathname === '/brand'
-                ? 'Brand'
-                : pathname.startsWith('/product/')
-                  ? 'Product'
-                  : null
+              : pathname.startsWith('/product/')
+                ? 'Account'
+                : null
 
   const onPointerDown = (e: React.PointerEvent) => {
     dragging.current = true
@@ -120,34 +105,26 @@ const MainLayout = ({ children }) => {
   }
 
   return (
-    <div className="mx-auto min-h-screen max-w-md bg-[#FFF9E5] font-sans text-[#211F26] antialiased">
-      <header className="sticky top-0 z-40 bg-[#3E2679] text-white">
+    <div className="mx-auto min-h-screen max-w-md bg-[#F3F4F8] font-sans text-[#211F26] antialiased">
+      <header className={`sticky top-0 z-40 bg-[#312E81] text-white transition-transform duration-300 ease-out will-change-transform ${hideHeader ? '-translate-y-full' : 'translate-y-0'}`}>
         <div className="flex items-center justify-between px-4 py-3">
           <Link to={routes.home()} className="flex items-center gap-1.5">
-            <YumzeeLogo size={38} />
+            <StreamLogo size={38} />
             <span className="text-2xl font-black tracking-tight">
               {headerTitle ? (
                 <span className="text-white">{headerTitle}</span>
               ) : (
                 <>
-                  <span className="text-[#FFC107]">YUM</span>
-                  <span className="text-white">ZEE</span>
+                  <span className="text-[#A5B4FC]">STR</span>
+                  <span className="text-white">EAM</span>
                 </>
               )}
             </span>
           </Link>
           <div className="flex items-center gap-2">
-            <Link to={routes.notifications()} className="relative rounded-full   p-2">
-              <Bell className="h-5 w-5 text-white" />
-              {unreadCount > 0 && (
-                <span className="absolute -right-1 -top-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-red-500 px-1 text-[10px] font-bold text-white">
-                  {unreadCount > 9 ? '9+' : unreadCount}
-                </span>
-              )}
-            </Link>
             <Link to={routes.basket()} className="relative rounded-full bg-white/20 p-2">
               <ShoppingCart className="h-5 w-5 text-white" />
-              {itemCount > 0 && <span className="absolute -right-1 -top-1 rounded-full bg-[#FFC107] px-1 text-[10px] text-black">{itemCount}</span>}
+              {itemCount > 0 && <span className="absolute -right-1 -top-1 rounded-full bg-white px-1 text-[10px] text-[#312E81]">{itemCount}</span>}
             </Link>
           </div>
         </div>
@@ -155,12 +132,12 @@ const MainLayout = ({ children }) => {
       <main className="pb-20">{children}</main>
 
       <div className="fixed bottom-0 left-0 right-0 z-40 flex justify-center pointer-events-none">
-        <nav className="pointer-events-auto w-full max-w-md border-t bg-[#3E2679] text-white">
-          <div className="grid grid-cols-4 py-2">
-            <button onClick={() => navigate(routes.home())} className="flex flex-col items-center text-[10px]"><Home className="h-5 w-5" />Home</button>
-            <button onClick={() => navigate(routes.search())} className="flex flex-col items-center text-[10px]"><Search className="h-5 w-5" />Search</button>
-            <button onClick={() => navigate(routes.orders())} className="flex flex-col items-center text-[10px]"><ShoppingBag className="h-5 w-5" />Orders</button>
-            <button onClick={() => navigate(routes.profile())} className="flex flex-col items-center text-[10px]"><User className="h-5 w-5" />Profile</button>
+        <nav className="pointer-events-auto w-full max-w-md border-t border-white/10 bg-[#312E81] pb-[env(safe-area-inset-bottom)] text-white">
+          <div className="grid grid-cols-4 gap-1 px-2 py-2">
+            <button onClick={() => navigate(routes.home())} className="flex flex-col items-center gap-0.5 rounded-xl py-0.5 text-[10px] font-semibold active:bg-white/10"><Home className="h-5 w-5" />Home</button>
+            <button onClick={() => navigate(routes.search())} className="flex flex-col items-center gap-0.5 rounded-xl py-0.5 text-[10px] font-semibold active:bg-white/10"><Search className="h-5 w-5" />Search</button>
+            <button onClick={() => navigate(routes.orders())} className="flex flex-col items-center gap-0.5 rounded-xl py-0.5 text-[10px] font-semibold active:bg-white/10"><ShoppingBag className="h-5 w-5" />Orders</button>
+            <button onClick={() => navigate(routes.profile())} className="flex flex-col items-center gap-0.5 rounded-xl py-0.5 text-[10px] font-semibold active:bg-white/10"><User className="h-5 w-5" />Profile</button>
           </div>
         </nav>
       </div>
@@ -177,11 +154,11 @@ const MainLayout = ({ children }) => {
       >
         <button
           onClick={() => { if (!didDrag.current) navigate(routes.basket()) }}
-          className="relative flex h-14 w-14 cursor-grab items-center justify-center rounded-full bg-[#FFC107] shadow-2xl active:cursor-grabbing"
+          className="relative flex h-14 w-14 cursor-grab items-center justify-center rounded-full bg-[#4338CA] shadow-2xl active:cursor-grabbing"
         >
-          <ShoppingCart className="h-6 w-6 text-[#3E2679]" />
+          <ShoppingCart className="h-6 w-6 text-white" />
           {itemCount > 0 && (
-            <span className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-[#3E2679] text-[10px] font-bold text-white">
+            <span className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-white text-[10px] font-bold text-[#312E81]">
               {itemCount}
             </span>
           )}

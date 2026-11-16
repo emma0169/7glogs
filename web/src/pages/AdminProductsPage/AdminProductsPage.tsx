@@ -4,10 +4,11 @@ import { db } from 'src/lib/firebase'
 import { collection, onSnapshot, addDoc, updateDoc, deleteDoc, doc, serverTimestamp } from 'firebase/firestore'
 import { useEffect, useState } from 'react'
 import { ArrowLeft, Package, Plus, Loader2, CheckCircle2, MoreVertical, Pencil, Trash2 } from 'lucide-react'
+import { COUNTRIES } from 'src/lib/constants'
 
 const AdminProductsPage = () => {
   const [products, setProducts] = useState<any[]>([])
-  const [newProduct, setNewProduct] = useState({ name: '', price: '', image: '', code: '', description: '', category: 'Pastries' })
+  const [newProduct, setNewProduct] = useState({ name: '', price: '', image: '', loginEmail: '', loginPassword: '', category: 'TikTok', country: '', followers: '', accountAge: '' })
   const [isAddingProduct, setIsAddingProduct] = useState(false)
   const [productSuccess, setProductSuccess] = useState(false)
 
@@ -18,7 +19,7 @@ const AdminProductsPage = () => {
   useEffect(() => {
     const unsubProducts = onSnapshot(collection(db, 'products'), (snapshot) => {
       const data = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }))
-      setProducts(data.sort((a, b) => a.code - b.code))
+      setProducts(data.sort((a, b) => (a.price || 0) - (b.price || 0)))
     })
     return () => unsubProducts()
   }, [])
@@ -30,12 +31,15 @@ const AdminProductsPage = () => {
       name: product.name || '',
       price: String(product.price || ''),
       image: product.image || '',
-      code: String(product.code || ''),
-      description: product.description || '',
-      category: product.category || 'Pastries',
+      loginEmail: product.loginEmail || '',
+      loginPassword: product.loginPassword || '',
+      category: product.category || 'TikTok',
+      country: product.country || '',
+      followers: product.followers || '',
+      accountAge: product.accountAge || '',
     })
     setOpenMenuId(null)
-    window.scrollTo({ top: 0, behavior: 'smooth' }) // Scroll to form
+    window.scrollTo({ top: 0, behavior: 'smooth' })
   }
 
   // Delete Product
@@ -52,30 +56,31 @@ const AdminProductsPage = () => {
   // Add OR Update Product
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (!newProduct.name || !newProduct.price || !newProduct.code) return
+    if (!newProduct.name || !newProduct.price) return
     setIsAddingProduct(true)
 
     try {
       if (editingId) {
-        // UPDATE existing product
         await updateDoc(doc(db, 'products', editingId), {
           ...newProduct,
           price: Number(newProduct.price),
-          code: Number(newProduct.code),
+          country: newProduct.country,
+          followers: newProduct.followers,
+          accountAge: newProduct.accountAge,
         })
-        setEditingId(null) // Stop editing
+        setEditingId(null)
       } else {
-        // ADD new product
         await addDoc(collection(db, 'products'), {
           ...newProduct,
           price: Number(newProduct.price),
-          code: Number(newProduct.code),
+          country: newProduct.country,
+          followers: newProduct.followers,
+          accountAge: newProduct.accountAge,
           createdAt: serverTimestamp(),
         })
       }
 
-      // Reset form
-      setNewProduct({ name: '', price: '', image: '', code: '', description: '', category: 'Pastries' })
+      setNewProduct({ name: '', price: '', image: '', loginEmail: '', loginPassword: '', category: 'TikTok', country: '', followers: '', accountAge: '' })
       setProductSuccess(true)
       setTimeout(() => setProductSuccess(false), 3000)
     } catch (error) {
@@ -85,10 +90,9 @@ const AdminProductsPage = () => {
     }
   }
 
-  // Cancel Editing
   const handleCancelEdit = () => {
     setEditingId(null)
-    setNewProduct({ name: '', price: '', image: '', code: '', description: '', category: 'Pastries' })
+    setNewProduct({ name: '', price: '', image: '', loginEmail: '', loginPassword: '', category: 'TikTok', country: '', followers: '', accountAge: '' })
   }
 
   return (
@@ -100,18 +104,18 @@ const AdminProductsPage = () => {
             <button onClick={() => navigate(routes.admin())} className="flex items-center gap-2 rounded-lg bg-white/20 px-4 py-2 text-sm font-bold hover:bg-white/30">
               <ArrowLeft className="h-4 w-4" /> Back
             </button>
-            <h1 className="text-2xl font-black">Products</h1>
+            <h1 className="text-2xl font-black">Accounts</h1>
           </div>
         </div>
       </header>
 
       <div className="mx-auto max-w-7xl px-6 py-6">
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
-          {/* Product List */}
+          {/* Account List */}
           <div className="order-2 rounded-2xl bg-white p-6 border border-red-100 lg:order-1 lg:col-span-2">
-            <h2 className="mb-4 text-xl font-black text-red-600">All Products</h2>
+            <h2 className="mb-4 text-xl font-black text-red-600">All Accounts</h2>
             {products.length === 0 ? (
-              <p className="py-8 text-center text-gray-400">No products uploaded yet...</p>
+              <p className="py-8 text-center text-gray-400">No accounts uploaded yet...</p>
             ) : (
               <div className="space-y-3">
                 {products.map((product) => (
@@ -120,12 +124,12 @@ const AdminProductsPage = () => {
                       <img src={product.image} alt={product.name} className="h-16 w-16 rounded-lg object-cover" />
                     )}
                     <div className="flex-1">
-                      <p className="font-bold text-gray-800">#{product.code} {product.name}</p>
+                      <p className="font-bold text-gray-800">{product.name}</p>
                       <p className="text-xs text-gray-500">{product.category}</p>
-                      <p className="text-sm font-black text-red-600">₦{product.price?.toLocaleString()}</p>
+                      <p className="text-xs text-gray-500">{product.country}  {product.followers}</p>
+                      <p className="text-sm font-black text-red-600">{product.price?.toLocaleString()}</p>
                     </div>
 
-                    {/* 3 Dots Menu */}
                     <div className="relative">
                       <button
                         onClick={() => setOpenMenuId(openMenuId === product.id ? null : product.id)}
@@ -160,7 +164,7 @@ const AdminProductsPage = () => {
           {/* Form (Add or Edit) */}
           <div className="order-1 h-fit rounded-2xl bg-red-600 p-6 text-white lg:order-2">
             <h2 className="mb-4 text-xl font-black">
-              {editingId ? 'Edit Product' : 'Upload New Product'}
+              {editingId ? 'Edit Account' : 'Upload New Account'}
             </h2>
             {productSuccess && (
               <div className="mb-4 flex items-center gap-2 rounded-lg bg-white p-3 text-red-600">
@@ -168,25 +172,45 @@ const AdminProductsPage = () => {
               </div>
             )}
             <form onSubmit={handleSubmit} className="space-y-4">
-              <input type="text" placeholder="Product Name" value={newProduct.name} onChange={(e) => setNewProduct({ ...newProduct, name: e.target.value })} required className="w-full rounded-lg border border-red-300 bg-white px-4 py-2 text-sm text-gray-800 placeholder-red-300" />
-              <input type="number" placeholder="Product Number" value={newProduct.code} onChange={(e) => setNewProduct({ ...newProduct, code: e.target.value })} required className="w-full rounded-lg border border-red-300 bg-white px-4 py-2 text-sm text-gray-800 placeholder-red-300" />
-              <input type="number" placeholder="Price (₦)" value={newProduct.price} onChange={(e) => setNewProduct({ ...newProduct, price: e.target.value })} required className="w-full rounded-lg border border-red-300 bg-white px-4 py-2 text-sm text-gray-800 placeholder-red-300" />
+              <input type="text" placeholder="Account Name (e.g., Real TikTok 5K Followers)" value={newProduct.name} onChange={(e) => setNewProduct({ ...newProduct, name: e.target.value })} required className="w-full rounded-lg border border-red-300 bg-white px-4 py-2 text-sm text-gray-800 placeholder-red-300" />
+              <input type="number" placeholder="Price (NGN)" value={newProduct.price} onChange={(e) => setNewProduct({ ...newProduct, price: e.target.value })} required className="w-full rounded-lg border border-red-300 bg-white px-4 py-2 text-sm text-gray-800 placeholder-red-300" />
               <input type="text" placeholder="IMGUR Image Link" value={newProduct.image} onChange={(e) => setNewProduct({ ...newProduct, image: e.target.value })} className="w-full rounded-lg border border-red-300 bg-white px-4 py-2 text-sm text-gray-800 placeholder-red-300" />
 
-              <select value={newProduct.category} onChange={(e) => setNewProduct({ ...newProduct, category: e.target.value })} className="w-full rounded-lg border border-red-300 bg-white px-4 py-2 text-sm text-gray-800" required>
-                <option value="Pastries">Pastries</option>
-                <option value="Savory Snacks">Savory Snacks</option>
-                <option value="Kilishi">Kilishi</option>
-                <option value="Cakes & Desserts">Cakes & Desserts</option>
-                <option value="Drinks">Drinks</option>
-                <option value="Healthy Bites">Healthy Bites</option>
+              <select value={newProduct.category} onChange={(e) => {
+                const category = e.target.value
+                setNewProduct({
+                  ...newProduct,
+                  category,
+                  ...(category === 'Buy Number' || category === 'WhatsApp' ? { followers: '', accountAge: '' } : {}),
+                })
+              }} className="w-full rounded-lg border border-red-300 bg-white px-4 py-2 text-sm text-gray-800" required>
+                <option value="TikTok">TikTok</option>
+                <option value="Instagram">Instagram</option>
+                <option value="Facebook">Facebook</option>
+                <option value="X (Twitter)">X (Twitter)</option>
+                <option value="WhatsApp">WhatsApp</option>
+                <option value="Buy Number">Buy Number</option>
               </select>
 
-              <textarea placeholder="Full Description" value={newProduct.description} onChange={(e) => setNewProduct({ ...newProduct, description: e.target.value })} rows={3} className="w-full rounded-lg border border-red-300 bg-white px-4 py-2 text-sm text-gray-800 placeholder-red-300" />
+              <select value={newProduct.country} onChange={(e) => setNewProduct({ ...newProduct, country: e.target.value })} className="w-full rounded-lg border border-red-300 bg-white px-4 py-2 text-sm text-gray-800" required>
+                <option value="" disabled>Select Country</option>
+                {COUNTRIES.map((c) => (
+                  <option key={c} value={c}>{c}</option>
+                ))}
+              </select>
+              {newProduct.category !== 'Buy Number' && newProduct.category !== 'WhatsApp' && (
+                <>
+                  <input type="text" placeholder="Followers (e.g., 5K, 10K)" value={newProduct.followers} onChange={(e) => setNewProduct({ ...newProduct, followers: e.target.value })} className="w-full rounded-lg border border-red-300 bg-white px-4 py-2 text-sm text-gray-800" />
+                  <input type="text" placeholder="Account Age (e.g., 2018-2024)" value={newProduct.accountAge} onChange={(e) => setNewProduct({ ...newProduct, accountAge: e.target.value })} className="w-full rounded-lg border border-red-300 bg-white px-4 py-2 text-sm text-gray-800" />
+                </>
+              )}
+              <input type="text" placeholder="Login Email / Username (shown after purchase)" value={newProduct.loginEmail} onChange={(e) => setNewProduct({ ...newProduct, loginEmail: e.target.value })} className="w-full rounded-lg border border-red-300 bg-white px-4 py-2 text-sm text-gray-800" />
+              <input type="text" placeholder="Login Password (shown after purchase)" value={newProduct.loginPassword} onChange={(e) => setNewProduct({ ...newProduct, loginPassword: e.target.value })} className="w-full rounded-lg border border-red-300 bg-white px-4 py-2 text-sm text-gray-800" />
+
 
               <button type="submit" disabled={isAddingProduct} className="flex w-full items-center justify-center gap-2 rounded-lg bg-white py-3 text-sm font-black text-red-600 hover:bg-red-100 transition disabled:opacity-50">
                 {isAddingProduct ? <Loader2 className="h-5 w-5 animate-spin" /> : editingId ? <Pencil className="h-5 w-5" /> : <Plus className="h-5 w-5" />}
-                {isAddingProduct ? 'Saving...' : editingId ? 'Update Product' : 'Add Product'}
+                {isAddingProduct ? 'Saving...' : editingId ? 'Update Account' : 'Add Account'}
               </button>
 
               {editingId && (

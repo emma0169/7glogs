@@ -1,43 +1,41 @@
 import React, { useState, useEffect, useMemo } from 'react'
 import { Link, routes } from '@redwoodjs/router'
-import { Search } from 'lucide-react'
+import { Search, Globe } from 'lucide-react'
 import { Metadata } from '@redwoodjs/web'
 import { collection, onSnapshot } from 'firebase/firestore'
 import { db } from 'src/lib/firebase'
+import { useCart } from 'src/components/CartContext/CartContext'
+import { COUNTRIES, countryMatches } from 'src/lib/constants'
+import { Flag } from 'src/components/Flag/Flag'
+import { SocialIcon } from 'src/components/SocialIcon/SocialIcon'
 
 interface Product {
   id: string
-  code: number
   name: string
+  category: string
+  country: string
+  followers: string
+  accountAge: string
   price: number
   image: string
-  category: string
   description: string
 }
 
+const PLATFORMS = ['All', 'TikTok', 'Instagram', 'Facebook', 'X (Twitter)', 'WhatsApp', 'Buy Number']
+const COUNTRY_FILTERS = ['All Countries', ...COUNTRIES]
+
 const SearchPage = () => {
+  const { addToCart } = useCart()
   const [products, setProducts] = useState<Product[]>([])
   const [searchTerm, setSearchTerm] = useState('')
-  const [activeCategory, setActiveCategory] = useState('All Items')
+  const [platformFilter, setPlatformFilter] = useState('All')
+  const [countryFilter, setCountryFilter] = useState('All Countries')
   const [loading, setLoading] = useState(true)
-
-  const categories = [
-    'All Items',
-    'Pastries',
-    'Savory Snacks',
-    'Kilishi',
-    'Cakes & Desserts',
-    'Drinks',
-    'Healthy Bites',
-  ]
 
   useEffect(() => {
     const unsubscribe = onSnapshot(collection(db, 'products'), (snapshot) => {
-      const data = snapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
-      })) as Product[]
-      data.sort((a, b) => a.code - b.code)
+      const data = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() })) as Product[]
+      data.sort((a, b) => (a.price || 0) - (b.price || 0))
       setProducts(data)
       setLoading(false)
     })
@@ -45,29 +43,19 @@ const SearchPage = () => {
   }, [])
 
   const filteredProducts = useMemo(() => {
-    let results = products
-    if (activeCategory !== 'All Items') {
-      results = results.filter((p) => (p.category || '').trim().toLowerCase() === activeCategory.toLowerCase())
-    }
-    if (searchTerm.trim()) {
-      const q = searchTerm.trim().toLowerCase()
-      results = results.filter(
-        (p) =>
-          p.name.toLowerCase().includes(q) ||
-          (p.description || '').toLowerCase().includes(q)
-      )
-    }
-    return results
-  }, [searchTerm, activeCategory, products])
-
-  const handleCategoryClick = (cat: string) => {
-    setActiveCategory(cat)
-    setSearchTerm('')
-  }
+    return products.filter((p) => {
+      const matchSearch = p.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        p.category.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        (p.description || '').toLowerCase().includes(searchTerm.toLowerCase())
+      const matchPlatform = platformFilter === 'All' || p.category === platformFilter
+      const matchCountry = countryMatches(p.country, countryFilter)
+      return matchSearch && matchPlatform && matchCountry
+    })
+  }, [searchTerm, platformFilter, countryFilter, products])
 
   return (
-    <div className="min-h-screen bg-[#FFF9E5]">
-      <Metadata title="Yumzee — Search" description="Search for snacks" />
+    <div className="min-h-screen bg-[#F3F4F8]">
+      <Metadata title="Search Accounts — STREAM" description="Search social media accounts" />
 
       <header className="sticky top-0 z-10 bg-white border-b border-[#E9E5EE] p-4">
         <div className="mx-auto max-w-md">
@@ -76,7 +64,7 @@ const SearchPage = () => {
             <div className="flex-1 rounded-full bg-[#F5F5F5] px-4 py-3 flex items-center">
               <input
                 type="text"
-                placeholder="Search for snacks..."
+                placeholder="Search accounts..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="bg-transparent outline-none w-full text-sm text-[#211F26]"
@@ -86,21 +74,46 @@ const SearchPage = () => {
         </div>
       </header>
 
-      <main className="mx-auto max-w-md px-4 pt-0">
+      <main className="mx-auto max-w-md px-4 pt-0 pb-20">
         <div className="anim-fade-up mb-4 text-xl font-bold text-[#211F26]">Search Results</div>
 
-        <div className="anim-fade-up mb-4 flex gap-2 overflow-x-auto whitespace-nowrap scrollbar-hide" style={{ animationDelay: '0.1s' }}>
-          {categories.map((cat) => (
+        <div className="anim-fade-up mb-4 flex gap-2 overflow-x-auto whitespace-nowrap scrollbar-hide">
+          {PLATFORMS.map((plat) => {
+            const active = platformFilter === plat
+            return (
+              <button
+                key={plat}
+                onClick={() => setPlatformFilter(plat)}
+                className={`flex items-center gap-1.5 whitespace-nowrap rounded-full px-4 py-2 text-xs font-bold transition-all duration-200 active:scale-95 ${
+                  active
+                    ? 'bg-[#312E81] text-white scale-105'
+                    : 'border border-[#E9E5EE] bg-white text-[#6F6B76] hover:text-[#312E81]'
+                }`}
+              >
+                {plat === 'All' ? (
+                  <Globe className="h-3.5 w-3.5" />
+                ) : (
+                  <SocialIcon platform={plat} size={14} colored={!active} />
+                )}
+                {plat}
+              </button>
+            )
+          })}
+        </div>
+
+        <div className="anim-fade-up mb-4 flex gap-2 overflow-x-auto whitespace-nowrap scrollbar-hide">
+          {COUNTRY_FILTERS.map((cty) => (
             <button
-              key={cat}
-              onClick={() => handleCategoryClick(cat)}
-              className={`whitespace-nowrap rounded-full px-4 py-2 text-sm font-bold transition-all duration-200 active:scale-95 ${
-                activeCategory === cat
-                  ? 'bg-[#3E2679] text-white scale-105'
-                  : 'border border-[#E9E5EE] bg-white text-[#6F6B76] hover:text-[#3E2679]'
+              key={cty}
+              onClick={() => setCountryFilter(cty)}
+              className={`flex items-center gap-1.5 whitespace-nowrap rounded-full px-4 py-2 text-xs font-bold transition-all duration-200 active:scale-95 ${
+                countryFilter === cty
+                  ? 'bg-[#4338CA] text-white scale-105'
+                  : 'border border-[#E9E5EE] bg-white text-[#6F6B76] hover:text-[#312E81]'
               }`}
             >
-              {cat}
+              {cty === 'All Countries' ? <Globe className="h-3.5 w-3.5" /> : <Flag country={cty} />}
+              {cty === 'All Countries' ? 'All' : cty}
             </button>
           ))}
         </div>
@@ -121,7 +134,7 @@ const SearchPage = () => {
             </div>
           ) : filteredProducts.length === 0 ? (
             <div className="anim-pop-in py-12 text-center text-[#6F6B76]">
-              <p>No snacks found</p>
+              <p>No accounts found</p>
             </div>
           ) : (
             <div className="flex flex-col space-y-2">
@@ -132,17 +145,22 @@ const SearchPage = () => {
                   className="anim-fade-up group flex items-center gap-3 rounded-2xl bg-white p-2 transition-all duration-200 hover:-translate-y-0.5 active:scale-[0.99]"
                   style={{ animationDelay: `${Math.min(index * 70, 560)}ms` }}
                 >
-                  {/* Yellow Background Image, Bigger */}
                   <img
-                    src={product.image}
+                    src={product.image || '/placeholder.jpg'}
                     alt={product.name}
-                    className="h-28 w-28 rounded-lg object-cover bg-[#FFC107] transition-transform duration-300 group-hover:scale-105"
+                    className="h-28 w-28 rounded-lg object-cover bg-white transition-transform duration-300 group-hover:scale-105"
                   />
-                  <div className="flex-1">
+                  <div className="flex-1 min-w-0">
                     <h3 className="text-base font-bold text-[#211F26]">{product.name}</h3>
-                    <p className="mt-1 text-xs text-[#6F6B76] line-clamp-2">{product.description}</p>
-                    <p className="mt-2 text-base font-bold text-[#3E2679]">
-                      ₦{product.price.toLocaleString()}
+                    <div className="mt-2 flex flex-wrap items-center gap-x-2 gap-y-1 text-[10px] font-bold text-[#4338CA]">
+                      <span className="inline-flex items-center gap-1 rounded-full bg-[#4338CA]/10 px-2 py-0.5 uppercase">
+                        <SocialIcon platform={product.category} size={11} /> {product.category}
+                      </span>
+                      {product.country && <span className="inline-flex items-center gap-1"><Flag country={product.country} /> {product.country}</span>}
+                      {product.followers && <span>{product.followers}</span>}
+                    </div>
+                    <p className="mt-2 text-base font-bold text-[#312E81]">
+                      {product.price.toLocaleString()}
                     </p>
                   </div>
                 </Link>
