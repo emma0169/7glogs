@@ -3,13 +3,18 @@ import { Metadata } from '@redwoodjs/web'
 import { db } from 'src/lib/firebase'
 import { collection, onSnapshot, addDoc, updateDoc, deleteDoc, doc, serverTimestamp } from 'firebase/firestore'
 import { useEffect, useState } from 'react'
-import { ArrowLeft, Package, Plus, Loader2, CheckCircle2, MoreVertical, Pencil, Trash2 } from 'lucide-react'
+import { ArrowLeft, Package, Plus, Loader2, CheckCircle2, MoreVertical, Pencil, Trash2, Search } from 'lucide-react'
+import SocialIcon from 'src/components/SocialIcon/SocialIcon'
 import { COUNTRIES } from 'src/lib/constants'
+
+const PLATFORM_ORDER = ['TikTok', 'Instagram', 'Facebook', 'X (Twitter)', 'WhatsApp', 'Buy Number']
 
 const AdminProductsPage = () => {
   const [products, setProducts] = useState<any[]>([])
   const [newProduct, setNewProduct] = useState({ name: '', price: '', image: '', loginEmail: '', loginPassword: '', category: 'TikTok', country: '', followers: '', accountAge: '' })
   const [isAddingProduct, setIsAddingProduct] = useState(false)
+  const [activeCategory, setActiveCategory] = useState('All')
+  const [query, setQuery] = useState('')
   const [productSuccess, setProductSuccess] = useState(false)
 
   // State for Editing and Menu
@@ -113,51 +118,124 @@ const AdminProductsPage = () => {
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
           {/* Account List */}
           <div className="order-2 rounded-2xl bg-white p-6 border border-red-100 lg:order-1 lg:col-span-2">
-            <h2 className="mb-4 text-xl font-black text-red-600">All Accounts</h2>
+            <div className="mb-4 flex items-center justify-between gap-3">
+              <h2 className="text-xl font-black text-red-600">Accounts by Platform</h2>
+              <span className="rounded-full bg-red-100 px-3 py-1 text-xs font-black text-red-600">{products.length} total</span>
+            </div>
+
+            <div className="mb-4 flex gap-2 overflow-x-auto pb-1">
+              {['All', ...PLATFORM_ORDER].map((cat) => {
+                const count = cat === 'All' ? products.length : products.filter((p) => p.category === cat).length
+                const active = activeCategory === cat
+                return (
+                  <button
+                    key={cat}
+                    onClick={() => setActiveCategory(cat)}
+                    className={`shrink-0 rounded-full border px-3 py-1.5 text-xs font-bold transition ${
+                      active
+                        ? 'border-red-600 bg-red-600 text-white'
+                        : 'border-red-100 bg-white text-gray-600 hover:bg-red-50'
+                    }`}
+                  >
+                    {cat} <span className={active ? 'text-white/70' : 'text-gray-400'}>{count}</span>
+                  </button>
+                )
+              })}
+            </div>
+
+            <div className="relative mb-4">
+              <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
+              <input
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                placeholder="Search by name, country or platform..."
+                className="w-full rounded-lg border border-red-100 bg-red-50/40 py-2 pl-9 pr-3 text-sm text-gray-800 placeholder-gray-400 outline-none focus:border-red-300"
+              />
+            </div>
+
             {products.length === 0 ? (
               <p className="py-8 text-center text-gray-400">No accounts uploaded yet...</p>
             ) : (
-              <div className="space-y-3">
-                {products.map((product) => (
-                  <div key={product.id} className="relative flex items-center gap-4 rounded-xl border border-red-100 p-3">
-                    {product.image && (
-                      <img src={product.image} alt={product.name} className="h-16 w-16 rounded-lg object-cover" />
-                    )}
-                    <div className="flex-1">
-                      <p className="font-bold text-gray-800">{product.name}</p>
-                      <p className="text-xs text-gray-500">{product.category}</p>
-                      <p className="text-xs text-gray-500">{product.country}  {product.followers}</p>
-                      <p className="text-sm font-black text-red-600">{product.price?.toLocaleString()}</p>
-                    </div>
+              (() => {
+                const q = query.trim().toLowerCase()
+                const visible = products.filter((p) => {
+                  const matchesCategory = activeCategory === 'All' || p.category === activeCategory
+                  const matchesQuery = !q || `${p.name} ${p.country} ${p.category}`.toLowerCase().includes(q)
+                  return matchesCategory && matchesQuery
+                })
+                const extraCategories = Array.from(new Set(visible.map((p) => p.category))).filter(
+                  (c) => !PLATFORM_ORDER.includes(c)
+                )
+                const grouped = [...PLATFORM_ORDER, ...extraCategories]
+                  .map((category) => ({
+                    category,
+                    items: visible
+                      .filter((p) => p.category === category)
+                      .sort((a, b) => (a.price || 0) - (b.price || 0)),
+                  }))
+                  .filter((g) => g.items.length > 0)
 
-                    <div className="relative">
-                      <button
-                        onClick={() => setOpenMenuId(openMenuId === product.id ? null : product.id)}
-                        className="rounded-full p-2 text-gray-400 hover:bg-red-50 hover:text-red-600"
-                      >
-                        <MoreVertical className="h-5 w-5" />
-                      </button>
+                if (grouped.length === 0) {
+                  return <p className="py-8 text-center text-gray-400">No accounts match your search.</p>
+                }
 
-                      {openMenuId === product.id && (
-                        <div className="absolute right-0 top-10 z-10 w-32 rounded-lg border border-red-200 bg-white p-1">
-                          <button
-                            onClick={() => handleEditClick(product)}
-                            className="flex w-full items-center gap-2 rounded-md px-3 py-2 text-left text-sm font-bold text-gray-700 hover:bg-red-50"
-                          >
-                            <Pencil className="h-4 w-4 text-red-600" /> Edit
-                          </button>
-                          <button
-                            onClick={() => handleDeleteProduct(product.id)}
-                            className="flex w-full items-center gap-2 rounded-md px-3 py-2 text-left text-sm font-bold text-red-600 hover:bg-red-50"
-                          >
-                            <Trash2 className="h-4 w-4" /> Delete
-                          </button>
+                return (
+                  <div className="space-y-6">
+                    {grouped.map((group) => (
+                      <div key={group.category}>
+                        <div className="mb-2 flex items-center gap-2 border-b border-red-100 pb-2">
+                          <SocialIcon platform={group.category} size={16} />
+                          <h3 className="text-sm font-black uppercase tracking-wide text-gray-800">{group.category}</h3>
+                          <span className="rounded-full bg-red-100 px-2 py-0.5 text-[10px] font-black text-red-600">
+                            {group.items.length}
+                          </span>
                         </div>
-                      )}
-                    </div>
+                        <div className="space-y-2">
+                          {group.items.map((product) => (
+                            <div key={product.id} className="relative flex items-center gap-4 rounded-xl border border-red-100 p-3">
+                              {product.image && (
+                                <img src={product.image} alt={product.name} className="h-16 w-16 rounded-lg object-cover" />
+                              )}
+                              <div className="flex-1">
+                                <p className="font-bold text-gray-800">{product.name}</p>
+                                <p className="text-xs text-gray-500">{product.category}</p>
+                                <p className="text-xs text-gray-500">{product.country}  {product.followers}</p>
+                                <p className="text-sm font-black text-red-600">{product.price?.toLocaleString()}</p>
+                              </div>
+
+                              <div className="relative">
+                                <button
+                                  onClick={() => setOpenMenuId(openMenuId === product.id ? null : product.id)}
+                                  className="rounded-full p-2 text-gray-400 hover:bg-red-50 hover:text-red-600"
+                                >
+                                  <MoreVertical className="h-5 w-5" />
+                                </button>
+
+                                {openMenuId === product.id && (
+                                  <div className="absolute right-0 top-10 z-10 w-32 rounded-lg border border-red-200 bg-white p-1">
+                                    <button
+                                      onClick={() => handleEditClick(product)}
+                                      className="flex w-full items-center gap-2 rounded-md px-3 py-2 text-left text-sm font-bold text-gray-700 hover:bg-red-50"
+                                    >
+                                      <Pencil className="h-4 w-4 text-red-600" /> Edit
+                                    </button>
+                                    <button
+                                      onClick={() => handleDeleteProduct(product.id)}
+                                      className="flex w-full items-center gap-2 rounded-md px-3 py-2 text-left text-sm font-bold text-red-600 hover:bg-red-50"
+                                    >
+                                      <Trash2 className="h-4 w-4" /> Delete
+                                    </button>
+                                  </div>
+                                )}
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    ))}
                   </div>
-                ))}
-              </div>
+                )
+              })()
             )}
           </div>
 
