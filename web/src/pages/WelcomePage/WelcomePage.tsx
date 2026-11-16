@@ -126,7 +126,7 @@ const WelcomePage = () => {
           </div>
 
           <p className="mt-5 text-[10px] tracking-wider text-white/40">
-            Powered by STREAM{' '}
+            Powered by FlyHub{' '}
             <button
               onClick={() => navigate(routes.adminLogin())}
               className="text-white/40 hover:text-white/70"

@@ -21,8 +21,8 @@ export const RoleSwitcherBar: React.FC = () => {
   useEffect(() => {
     reloadData()
     const handleUpdate = () => reloadData()
-    window.addEventListener('stream_store_update', handleUpdate)
-    return () => window.removeEventListener('stream_store_update', handleUpdate)
+    window.addEventListener('flyhub_store_update', handleUpdate)
+    return () => window.removeEventListener('flyhub_store_update', handleUpdate)
   }, [])
 
   const sampleGroup = activeGroups[0] || OrderStore.getGroupOrders()[0]

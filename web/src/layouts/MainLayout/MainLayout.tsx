@@ -3,7 +3,7 @@ import { ShoppingCart, User, LogOut, Home, Search, ShoppingBag } from 'lucide-re
 import { Link, navigate, routes, useLocation } from '@redwoodjs/router'
 import { useCart } from 'src/components/CartContext/CartContext'
 import { useAuth } from 'src/contexts/AuthContexts'
-import StreamLogo from 'src/components/YumzeeLogo/YumzeeLogo'
+import FlyHubLogo from 'src/components/FlyHubLogo/FlyHubLogo'
 
 const MainLayout = ({ children }) => {
   const { itemCount } = useCart()
@@ -57,7 +57,7 @@ const MainLayout = ({ children }) => {
   }, [])
 
   // WhatsApp-style header title: logo stays, only the text changes per page.
-  // Home (/) shows STREAM, every other page shows its own name.
+  // Home (/) shows FlyHub, every other page shows its own name.
   const { pathname } = useLocation()
   const headerTitle =
     pathname === '/search'
@@ -109,14 +109,14 @@ const MainLayout = ({ children }) => {
       <header className={`sticky top-0 z-40 bg-[#312E81] text-white transition-transform duration-300 ease-out will-change-transform ${hideHeader ? '-translate-y-full' : 'translate-y-0'}`}>
         <div className="flex items-center justify-between px-4 py-3">
           <Link to={routes.home()} className="flex items-center gap-1.5">
-            <StreamLogo size={38} />
+            <FlyHubLogo size={38} />
             <span className="text-2xl font-black tracking-tight">
               {headerTitle ? (
                 <span className="text-white">{headerTitle}</span>
               ) : (
                 <>
-                  <span className="text-[#A5B4FC]">STR</span>
-                  <span className="text-white">EAM</span>
+                  <span className="text-[#A5B4FC]">Fly</span>
+                  <span className="text-white">Hub</span>
                 </>
               )}
             </span>

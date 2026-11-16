@@ -68,7 +68,7 @@ const BasketPage = () => {
         paid: true,
         isCompleted: true,
         paymentMethod: 'Wallet',
-        paymentRef: `STREAM-${Date.now()}`,
+        paymentRef: `FlyHub-${Date.now()}`,
         createdAt: serverTimestamp(),
       })
 

@@ -85,7 +85,7 @@ const HomePage = () => {
       <div className="anim-fade-up mb-4 space-y-3">
         <div>
           <h1 className="text-2xl font-black text-[#211F26]">Hello, {getFirstName()}</h1>
-          <p className="text-sm text-[#6F6B76]">Welcome to STREAM</p>
+          <p className="text-sm text-[#6F6B76]">Welcome to FlyHub</p>
         </div>
 
         <div className="rounded-3xl bg-gradient-to-r from-[#312E81] to-[#4338CA] p-5 text-white shadow-lg">

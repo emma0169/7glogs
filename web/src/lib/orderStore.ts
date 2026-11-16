@@ -109,8 +109,8 @@ export const INITIAL_PRODUCTS: Product[] = [
   { id: 15, name: 'Greek Yogurt Parfait', category: 'Healthy Bites', sellerName: 'Healthy Bites Co.', price: 900, image: '/yogurt.jpg' },
 ]
 
-const ORDERS_KEY = 'stream_orders'
-const RULES_KEY = 'stream_rules'
+const ORDERS_KEY = 'flyhub_orders'
+const RULES_KEY = 'flyhub_rules'
 
 function loadOrders(): SingleOrder[] {
   if (typeof window === 'undefined') return []

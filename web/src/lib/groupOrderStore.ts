@@ -35,8 +35,8 @@ export interface GroupOrder {
   expiresAt: string
 }
 
-const STORAGE_KEY = 'stream_group_orders_yz'
-const EVENT = 'stream_group_update'
+const STORAGE_KEY = 'flyhub_group_orders_yz'
+const EVENT = 'flyhub_group_update'
 const BASE_FEE = 500
 const DISCOUNT = 0.3
 const EXPIRY = 60 * 60 * 1000

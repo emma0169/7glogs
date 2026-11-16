@@ -55,7 +55,7 @@ const SearchPage = () => {
 
   return (
     <div className="min-h-screen bg-[#F3F4F8]">
-      <Metadata title="Search Accounts — STREAM" description="Search social media accounts" />
+      <Metadata title="Search Accounts — FlyHub" description="Search social media accounts" />
 
       <header className="sticky top-0 z-10 bg-white border-b border-[#E9E5EE] p-4">
         <div className="mx-auto max-w-md">

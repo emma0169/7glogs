@@ -69,7 +69,7 @@ const LoginPage = () => {
 
   return (
     <div className="flex min-h-screen flex-col overflow-hidden bg-white md:flex-row">
-      <Metadata title="Login" description="Sign in to STREAM" />
+      <Metadata title="Login" description="Sign in to FlyHub" />
 
       {/* Left side - Branding */}
       <div className="relative flex min-h-[240px] flex-col items-center justify-center overflow-hidden bg-gradient-to-br from-[#4338CA] via-[#3A2366] to-[#2A1A4E] p-8 text-white md:min-h-screen md:w-1/2 md:p-12">
@@ -131,7 +131,7 @@ const LoginPage = () => {
           </button>
 
           <div className="mt-8 text-xs leading-relaxed text-[#6F6B76]">
-            By continuing you agree to STREAM&apos;s{' '}
+            By continuing you agree to FlyHub&apos;s{' '}
             <Link
               to={routes.home()}
               className="font-medium text-[#4338CA] hover:underline"

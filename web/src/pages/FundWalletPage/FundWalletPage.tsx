@@ -137,7 +137,7 @@ const FundWalletPage = () => {
 
       <div className="p-4 space-y-6">
         <div className="rounded-2xl border border-[#E9E5EE] bg-white p-6">
-          <p className="mb-4 text-sm text-[#6F6B76]">Add money to your STREAM wallet to buy social media accounts instantly.</p>
+          <p className="mb-4 text-sm text-[#6F6B76]">Add money to your FlyHub wallet to buy social media accounts instantly.</p>
 
           <div className="mb-4">
             <label className="block text-xs font-bold uppercase tracking-wider text-[#6F6B76] mb-2">Amount</label>

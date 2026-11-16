@@ -23,13 +23,13 @@ const AdminPortalPage = () => {
 
   return (
     <div className="min-h-screen bg-red-50">
-      <Metadata title="Admin Portal" description="STREAM Admin" />
+      <Metadata title="Admin Portal" description="FlyHub Admin" />
       <header className="bg-red-600 text-white">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
           <div className="flex items-center gap-3">
             <LayoutDashboard className="h-8 w-8" />
             <div>
-              <h1 className="text-2xl font-black">STREAM Admin</h1>
+              <h1 className="text-2xl font-black">FlyHub Admin</h1>
               <p className="text-xs text-red-200">Select a section to manage</p>
             </div>
           </div>

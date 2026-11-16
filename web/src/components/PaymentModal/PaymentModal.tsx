@@ -27,7 +27,7 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
   onSuccess,
   amount,
   email,
-  orderTitle = 'STREAM Account Order',
+  orderTitle = 'FlyHub Account Order',
   description = 'Digital account payment',
 }) => {
   const [method, setMethod] = useState<'card' | 'transfer' | 'wallet'>('card')
@@ -70,7 +70,7 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
       email: email,
       amount: amount * 100, // Paystack charges in kobo
       currency: 'NGN',
-      ref: `STREAM-${Date.now()}-${Math.floor(Math.random() * 100000)}`,
+      ref: `FlyHub-${Date.now()}-${Math.floor(Math.random() * 100000)}`,
       callback: (response: any) => {
         setIsProcessing(false)
         setIsComplete(true)
@@ -169,7 +169,7 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
                   }`}
                 >
                   <Wallet className="h-4 w-4" />
-                  <span>STREAM Wallet</span>
+                  <span>FlyHub Wallet</span>
                 </button>
               </div>
 
@@ -198,7 +198,7 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
                 <div className="rounded-2xl border border-[#E9E5EE] bg-[#F7F8FC] p-4 space-y-3">
                   <div className="flex items-center justify-between text-xs">
                     <span className="text-[#6F6B76]">Bank Name:</span>
-                    <span className="font-bold text-[#211F26]">Moniepoint MFB / STREAM</span>
+                    <span className="font-bold text-[#211F26]">Moniepoint MFB / FlyHub</span>
                   </div>
                   <div className="flex items-center justify-between text-xs">
                     <span className="text-[#6F6B76]">Account Number:</span>
@@ -208,7 +208,7 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
                   </div>
                   <div className="flex items-center justify-between text-xs">
                     <span className="text-[#6F6B76]">Beneficiary:</span>
-                    <span className="font-bold text-[#211F26]">STREAM Orders</span>
+                    <span className="font-bold text-[#211F26]">FlyHub Orders</span>
                   </div>
                   <p className="text-[11px] text-[#6F6B76] border-t border-[#E9E5EE] pt-2">
                     Transfer exactly {amount.toLocaleString()}. Payment verifies automatically within 5 minutes.
@@ -218,7 +218,7 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
 
               {method === 'wallet' && (
                 <div className="rounded-2xl border border-[#E9E5EE] bg-[#F7F8FC] p-4 space-y-2 text-center">
-                  <span className="text-xs text-[#6F6B76]">Available STREAM Wallet Balance</span>
+                  <span className="text-xs text-[#6F6B76]">Available FlyHub Wallet Balance</span>
                   <div className="text-2xl font-black text-emerald-600">0.00</div>
                   <p className="text-[11px] text-[#6F6B76]">
                     Fund your wallet first to use this payment method.
@@ -266,7 +266,7 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
         <div className="border-t border-[#E9E5EE] bg-[#F7F8FC] p-4 text-center">
           <div className="flex items-center justify-center gap-2 text-xs text-[#6F6B76]">
             <Mail className="h-3 w-3" />
-            <span>support@stream.com</span>
+            <span>support@flyhub.com</span>
             <Phone className="h-3 w-3 ml-2" />
             <span>+234 800 000 0000</span>
           </div>
