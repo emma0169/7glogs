@@ -4,7 +4,7 @@ import { Metadata } from '@redwoodjs/web'
 import { ChevronLeft, Loader2, CreditCard } from 'lucide-react'
 import { useAuth } from 'src/contexts/AuthContexts'
 import { db } from 'src/lib/firebase'
-import { doc, setDoc, increment, collection, addDoc, serverTimestamp } from 'firebase/firestore'
+import { doc, getDoc, setDoc, increment, collection, addDoc, runTransaction, serverTimestamp } from 'firebase/firestore'
 
 declare global {
   interface Window {
@@ -13,6 +13,7 @@ declare global {
 }
 
 const PAYSTACK_PUBLIC_KEY = 'pk_live_1868667df0704f583055b189f21c85769a6ddebd'
+const REFERRAL_REWARD = 3000
 
 const loadPaystack = (): Promise<any> => {
   return new Promise((resolve, reject) => {
@@ -73,6 +74,7 @@ const FundWalletPage = () => {
           {
             walletBalance: increment(amt),
             lastFundedAt: new Date().toISOString(),
+            hasDeposited: true,
           },
           { merge: true }
         )
@@ -89,6 +91,43 @@ const FundWalletPage = () => {
           })
         } catch (txErr) {
           console.warn('Transaction log failed (non-critical):', txErr)
+        }
+
+        // Credit the referrer once, on the referred user's first deposit
+        try {
+          await runTransaction(db, async (tx) => {
+            const referredSnap = await tx.get(docRef)
+            const referred = referredSnap.data()
+            if (
+              !referred?.referredBy ||
+              referred?.referralRewarded ||
+              referred.referredBy === user.uid
+            ) {
+              return
+            }
+
+            const referrerRef = doc(db, 'profiles', referred.referredBy)
+            tx.set(
+              referrerRef,
+              {
+                walletBalance: increment(REFERRAL_REWARD),
+                referralEarnings: increment(REFERRAL_REWARD),
+                referralCount: increment(1),
+              },
+              { merge: true }
+            )
+            tx.set(docRef, { referralRewarded: true }, { merge: true })
+            tx.set(doc(collection(db, 'transactions')), {
+              userId: referred.referredBy,
+              type: 'credit',
+              amount: REFERRAL_REWARD,
+              description: 'Referral bonus',
+              reference: `REF-${user.uid}`,
+              createdAt: serverTimestamp(),
+            })
+          })
+        } catch (refErr) {
+          console.warn('Referral reward failed (non-critical):', refErr)
         }
 
         alert(`Wallet funded with ${amt.toLocaleString()}!`)

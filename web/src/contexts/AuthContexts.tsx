@@ -16,7 +16,7 @@ import {
 } from 'firebase/auth'
 
 import { auth, db } from 'src/lib/firebase'
-import { doc, setDoc, serverTimestamp } from 'firebase/firestore'
+import { doc, getDoc, setDoc, serverTimestamp } from 'firebase/firestore'
 
 export interface AuthContextType {
   googleSignIn: () => Promise<User | null>
@@ -35,6 +35,13 @@ export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
   const [loading, setLoading] = useState<boolean>(true)
 
   useEffect(() => {
+    try {
+      const ref = new URLSearchParams(window.location.search).get('ref')
+      if (ref) localStorage.setItem('flyhub_referral', ref)
+    } catch (e) {
+      console.warn('Could not read referral code', e)
+    }
+
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
       setUser(currentUser)
       setLoading(false)
@@ -55,14 +62,40 @@ export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
       setUser(result.user)
       setLoading(false)
 
-      // NEW: Automatically save user to 'users' collection in Firestore
+      // Automatically save the user and attach their referrer if this is a new account
       if (result.user) {
-        await setDoc(doc(db, 'users', result.user.uid), {
-          name: result.user.displayName || 'User',
-          email: result.user.email || '',
-          uid: result.user.uid,
-          lastLogin: serverTimestamp(),
-        })
+        const uid = result.user.uid
+        const userRef = doc(db, 'users', uid)
+        const userSnap = await getDoc(userRef)
+        const isNewUser = !userSnap.exists()
+
+        await setDoc(
+          userRef,
+          {
+            name: result.user.displayName || 'User',
+            email: result.user.email || '',
+            uid,
+            lastLogin: serverTimestamp(),
+          },
+          { merge: true }
+        )
+
+        const pendingRef = localStorage.getItem('flyhub_referral')
+        if (pendingRef) {
+          if (isNewUser && pendingRef !== uid) {
+            const profileRef = doc(db, 'profiles', uid)
+            const profileSnap = await getDoc(profileRef)
+            const existing = profileSnap.exists() ? profileSnap.data() : {}
+            if (!existing.referredBy) {
+              await setDoc(
+                profileRef,
+                { referredBy: pendingRef, referredAt: serverTimestamp() },
+                { merge: true }
+              )
+            }
+          }
+          localStorage.removeItem('flyhub_referral')
+        }
       }
 
       return result.user

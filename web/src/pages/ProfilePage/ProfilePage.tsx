@@ -2,8 +2,8 @@
 import { useState, useEffect } from 'react'
 import { Link, navigate, routes } from '@redwoodjs/router'
 import { Metadata } from '@redwoodjs/web'
-import { User as UserIcon, Loader2, ChevronRight, Mail, HelpCircle, Wallet, LogOut, ShoppingBag, Receipt, Banknote } from 'lucide-react'
-import { doc, getDoc, collection, addDoc, serverTimestamp } from 'firebase/firestore'
+import { User as UserIcon, Loader2, ChevronRight, Mail, HelpCircle, Wallet, LogOut, ShoppingBag, Receipt, Banknote, Gift, Copy, Check, Lock } from 'lucide-react'
+import { doc, getDoc, collection, addDoc, serverTimestamp, query, where, getDocs } from 'firebase/firestore'
 import { db } from 'src/lib/firebase'
 import { useAuth } from 'src/contexts/AuthContexts'
 
@@ -12,6 +12,10 @@ const ISSUE_TYPES = ['Account issue', 'Payment problem', 'Wrong details received
 const ProfilePage = () => {
   const { user, logOut, isAuthenticated, loading } = useAuth()
   const [walletBalance, setWalletBalance] = useState(0)
+  const [hasDeposited, setHasDeposited] = useState(false)
+  const [referralCount, setReferralCount] = useState(0)
+  const [referralEarnings, setReferralEarnings] = useState(0)
+  const [copiedReferral, setCopiedReferral] = useState(false)
   const [isLoggingOut, setIsLoggingOut] = useState(false)
   const [isLoadingProfile, setIsLoadingProfile] = useState(false)
 
@@ -37,8 +41,26 @@ const ProfilePage = () => {
         const docSnap = await getDoc(docRef)
         if (docSnap.exists()) {
           const data = docSnap.data()
-          if (data.walletBalance) setWalletBalance(data.walletBalance)
+          setWalletBalance(Number(data.walletBalance || 0))
           if (data.phone) setSupportPhone(data.phone)
+          setReferralCount(Number(data.referralCount || 0))
+          setReferralEarnings(Number(data.referralEarnings || 0))
+
+          let deposited = !!data.hasDeposited
+          if (!deposited) {
+            try {
+              const txSnap = await getDocs(
+                query(collection(db, 'transactions'), where('userId', '==', user.uid))
+              )
+              deposited = txSnap.docs.some((d) => {
+                const tx = d.data()
+                return tx.type === 'credit' && tx.description === 'Wallet top-up'
+              })
+            } catch (txError) {
+              console.warn('Could not check deposit history:', txError)
+            }
+          }
+          setHasDeposited(deposited)
         }
       } catch (error) {
         console.error('Error loading profile:', error)
@@ -84,6 +106,30 @@ const ProfilePage = () => {
       alert('Could not submit request: ' + (error?.message || 'unknown error'))
     } finally {
       setIsSubmittingHelp(false)
+    }
+  }
+
+  const referralLink =
+    user && typeof window !== 'undefined'
+      ? `${window.location.origin}/?ref=${user.uid}`
+      : ''
+
+  const handleCopyReferral = async () => {
+    if (!hasDeposited || !referralLink) return
+    try {
+      await navigator.clipboard.writeText(referralLink)
+      setCopiedReferral(true)
+      setTimeout(() => setCopiedReferral(false), 2000)
+    } catch (error) {
+      const input = document.getElementById('referral-link') as HTMLInputElement | null
+      if (input) {
+        input.select()
+        document.execCommand('copy')
+        setCopiedReferral(true)
+        setTimeout(() => setCopiedReferral(false), 2000)
+      } else {
+        console.error('Could not copy referral link:', error)
+      }
     }
   }
 
@@ -154,6 +200,84 @@ const ProfilePage = () => {
               <Banknote className="h-3.5 w-3.5" /> Withdraw
             </Link>
           </div>
+        </div>
+
+        {/* Refer & Earn */}
+        <div className="anim-fade-up rounded-2xl border border-[#E9E5EE] bg-white p-4" style={{ animationDelay: '0.05s' }}>
+          <div className="flex items-start justify-between gap-3">
+            <div className="flex items-center gap-3">
+              <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#EEF0FF] text-[#4338CA]">
+                <Gift className="h-5 w-5" />
+              </span>
+              <div>
+                <p className="text-sm font-black text-[#211F26]">Refer & Earn</p>
+                <p className="text-xs font-medium text-[#6F6B76]">
+                  Earn ₦3,000 for every friend who joins and funds their wallet.
+                </p>
+              </div>
+            </div>
+            <span className="shrink-0 rounded-full bg-[#4338CA]/10 px-2.5 py-1 text-[10px] font-black text-[#4338CA]">
+              ₦3,000
+            </span>
+          </div>
+
+          {hasDeposited ? (
+            <>
+              <div className="mt-4">
+                <label className="text-[10px] font-bold uppercase tracking-wider text-[#6F6B76]">
+                  Your referral link
+                </label>
+                <div className="mt-1.5 flex gap-2">
+                  <input
+                    id="referral-link"
+                    readOnly
+                    value={referralLink}
+                    onFocus={(e) => e.currentTarget.select()}
+                    className="min-w-0 flex-1 rounded-xl border border-[#E9E5EE] bg-[#F7F8FC] px-3 py-2 text-xs font-semibold text-[#211F26] outline-none"
+                  />
+                  <button
+                    onClick={handleCopyReferral}
+                    className="inline-flex shrink-0 items-center gap-1.5 rounded-xl bg-[#4338CA] px-3 py-2 text-xs font-bold text-white transition hover:bg-[#3730A3] active:scale-95"
+                  >
+                    {copiedReferral ? (
+                      <>
+                        <Check className="h-3.5 w-3.5" /> Copied
+                      </>
+                    ) : (
+                      <>
+                        <Copy className="h-3.5 w-3.5" /> Copy
+                      </>
+                    )}
+                  </button>
+                </div>
+              </div>
+
+              <div className="mt-3 grid grid-cols-2 gap-2">
+                <div className="rounded-xl bg-[#F7F8FC] p-3 text-center">
+                  <p className="text-lg font-black text-[#211F26]">{referralCount}</p>
+                  <p className="text-[10px] font-bold uppercase tracking-wider text-[#8A8692]">Referrals</p>
+                </div>
+                <div className="rounded-xl bg-[#F7F8FC] p-3 text-center">
+                  <p className="text-lg font-black text-[#211F26]">₦{referralEarnings.toLocaleString()}</p>
+                  <p className="text-[10px] font-bold uppercase tracking-wider text-[#8A8692]">Earned</p>
+                </div>
+              </div>
+            </>
+          ) : (
+            <div className="mt-4 rounded-xl border border-dashed border-[#D8DCE8] bg-[#F7F8FC] p-4 text-center">
+              <Lock className="mx-auto h-5 w-5 text-[#8A8692]" />
+              <p className="mx-auto mt-2 max-w-xs text-xs font-semibold text-[#6F6B76]">
+                Deposit into your wallet first to unlock your referral link. Your
+                link will only work after your first deposit.
+              </p>
+              <Link
+                to={routes.fundWallet()}
+                className="mt-3 inline-flex items-center justify-center rounded-full bg-[#4338CA] px-4 py-2 text-xs font-bold text-white transition hover:bg-[#3730A3] active:scale-95"
+              >
+                Add Funds
+              </Link>
+            </div>
+          )}
         </div>
 
         <div className="anim-fade-up rounded-2xl border border-[#E9E5EE] bg-white" style={{ animationDelay: '0.1s' }}>
