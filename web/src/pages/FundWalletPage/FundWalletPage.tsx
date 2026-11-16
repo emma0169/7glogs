@@ -12,7 +12,7 @@ declare global {
   }
 }
 
-const PAYSTACK_PUBLIC_KEY = 'pk_test_e265e29c4d68e7362d4b0e71e62209fa133c3c8e'
+const PAYSTACK_PUBLIC_KEY = 'pk_live_1868667df0704f583055b189f21c85769a6ddebd'
 
 const loadPaystack = (): Promise<any> => {
   return new Promise((resolve, reject) => {
