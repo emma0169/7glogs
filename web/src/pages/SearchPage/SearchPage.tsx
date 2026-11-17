@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react'
 import { Link, routes } from '@redwoodjs/router'
-import { Search, Globe } from 'lucide-react'
+import { Search, Globe, Clock } from 'lucide-react'
 import { Metadata } from '@redwoodjs/web'
 import { collection, onSnapshot } from 'firebase/firestore'
 import { db } from 'src/lib/firebase'
@@ -52,6 +52,10 @@ const SearchPage = () => {
       return matchSearch && matchPlatform && matchCountry
     })
   }, [searchTerm, platformFilter, countryFilter, products])
+
+  const countryHasProducts =
+    countryFilter === 'All Countries' ||
+    products.some((p) => countryMatches(p.country, countryFilter))
 
   return (
     <div className="min-h-screen bg-[#F3F4F8]">
@@ -134,7 +138,17 @@ const SearchPage = () => {
             </div>
           ) : filteredProducts.length === 0 ? (
             <div className="anim-pop-in py-12 text-center text-[#6F6B76]">
-              <p>No accounts found</p>
+              {countryHasProducts ? (
+                <p>No accounts found</p>
+              ) : (
+                <>
+                  <span className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-[#EEF0FF] text-[#4338CA]">
+                    <Clock className="h-6 w-6" />
+                  </span>
+                  <p className="mt-3 text-base font-black text-[#211F26]">Coming soon</p>
+                  <p className="mt-1 text-sm">We&apos;re adding accounts in {countryFilter} soon.</p>
+                </>
+              )}
             </div>
           ) : (
             <div className="flex flex-col space-y-2">

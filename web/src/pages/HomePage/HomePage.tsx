@@ -3,7 +3,7 @@ import { Link, routes, navigate } from '@redwoodjs/router'
 import { useAuth } from 'src/contexts/AuthContexts'
 import { collection, onSnapshot, doc, getDoc } from 'firebase/firestore'
 import { db } from 'src/lib/firebase'
-import { Wallet, Users, Globe } from 'lucide-react'
+import { Wallet, Users, Globe, Clock } from 'lucide-react'
 import { COUNTRIES, countryMatches } from 'src/lib/constants'
 import { Flag } from 'src/components/Flag/Flag'
 import { SocialIcon } from 'src/components/SocialIcon/SocialIcon'
@@ -64,6 +64,10 @@ const HomePage = () => {
     const countryOk = countryMatches(p.country, countryFilter)
     return catOk && countryOk
   })
+
+  const countryHasProducts =
+    countryFilter === 'All Countries' ||
+    products.some((p) => countryMatches(p.country, countryFilter))
 
   const getFirstName = () => {
     if (!user) return 'there'
@@ -143,8 +147,20 @@ const HomePage = () => {
 
       <div className="mt-4 flex flex-col space-y-2">
         {filteredProducts.length === 0 ? (
-          <div className="rounded-2xl bg-white p-8 text-center border border-[#E9E5EE]">
-            <p className="text-sm text-[#6F6B76]">No accounts found</p>
+          <div className="anim-fade-up rounded-2xl border border-[#E9E5EE] bg-white p-8 text-center">
+            {countryHasProducts ? (
+              <p className="text-sm text-[#6F6B76]">No accounts found</p>
+            ) : (
+              <>
+                <span className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-[#EEF0FF] text-[#4338CA]">
+                  <Clock className="h-6 w-6" />
+                </span>
+                <p className="mt-3 text-base font-black text-[#211F26]">Coming soon</p>
+                <p className="mt-1 text-sm text-[#6F6B76]">
+                  We&apos;re adding accounts in {countryFilter} soon.
+                </p>
+              </>
+            )}
           </div>
         ) : (
           filteredProducts.map((product, index) => (
